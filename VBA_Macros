@@ -1,0 +1,115 @@
+Private Sub Workbook_Open()
+    Call Main
+End Sub
+
+Sub Main()
+    Call CombineTextFiles
+End Sub
+
+Sub CombineTextFiles()
+    Dim FilesToOpen
+    Dim x As Integer
+    Dim wkbAll As Workbook
+    Dim wkbTemp As Workbook
+    Dim sDelimiter As String
+
+    On Error GoTo ErrHandler
+    Application.ScreenUpdating = False
+
+    sDelimiter = "|"
+
+    FilesToOpen = Application.GetOpenFilename _
+      (FileFilter:="Text Files (*.txt), *.txt", _
+      MultiSelect:=True, Title:="Text Files to Open")
+
+    If TypeName(FilesToOpen) = "Boolean" Then
+        MsgBox "No Files were selected"
+        GoTo ExitHandler
+    End If
+
+    x = 1
+    Set wkbTemp = Workbooks.Open(Filename:=FilesToOpen(x))
+    wkbTemp.Sheets(1).Copy
+    Set wkbAll = ActiveWorkbook
+    wkbTemp.Close (False)
+    wkbAll.Worksheets(x).Columns("A:A").TextToColumns _
+      Destination:=Range("A1"), DataType:=xlDelimited, _
+      TextQualifier:=xlDoubleQuote, _
+      ConsecutiveDelimiter:=False, _
+      Tab:=False, Semicolon:=False, _
+      Comma:=False, Space:=False, _
+      Other:=True, OtherChar:="|"
+    x = x + 1
+
+    While x <= UBound(FilesToOpen)
+        Set wkbTemp = Workbooks.Open(Filename:=FilesToOpen(x))
+        With wkbAll
+            wkbTemp.Sheets(1).Move After:=.Sheets(.Sheets.Count)
+            .Worksheets(x).Columns("A:A").TextToColumns _
+              Destination:=Range("A1"), DataType:=xlDelimited, _
+              TextQualifier:=xlDoubleQuote, _
+              ConsecutiveDelimiter:=False, _
+              Tab:=False, Semicolon:=False, _
+              Comma:=False, Space:=False, _
+              Other:=True, OtherChar:=sDelimiter
+        End With
+        x = x + 1
+    Wend
+
+    Call Copy_Cell
+    wkbAll.Close (False)
+    
+
+ExitHandler:
+    Application.ScreenUpdating = True
+    Set wkbAll = Nothing
+    Set wkbTemp = Nothing
+    Exit Sub
+
+ErrHandler:
+    MsgBox Err.Description
+    Resume ExitHandler
+
+
+End Sub
+
+Sub Copy_Cell()
+     
+    Dim ws As Worksheet, nextrow As Long
+     
+    Application.ScreenUpdating = False
+    
+    For Each ws In ActiveWorkbook.Worksheets
+        nextrow = Sheet1.Cells(Rows.Count, "A").End(xlUp).Row + 1
+        If ws.CodeName <> "Sheet1" Then
+            Sheet1.Range("A" & nextrow) = ws.Range("B20")
+            Sheet1.Range("B" & nextrow) = ws.Range("F80")
+            Sheet1.Range("C" & nextrow) = ws.Range("F81")
+            Sheet1.Range("D" & nextrow) = ws.Range("F82")
+            Sheet1.Range("E" & nextrow) = ws.Range("F83")
+            Sheet1.Range("F" & nextrow) = ws.Range("F84")
+            Sheet1.Range("G" & nextrow) = ws.Range("F85")
+            Sheet1.Range("H" & nextrow) = ws.Range("F86")
+            Sheet1.Range("I" & nextrow) = ws.Range("F87")
+
+        End If
+        If ws.CodeName <> "Sheet1" Then
+            Sheet1.Range("K" & nextrow) = ws.Range("B20")
+            Sheet1.Range("L" & nextrow) = ws.Range("C80")
+            Sheet1.Range("M" & nextrow) = ws.Range("C81")
+            Sheet1.Range("N" & nextrow) = ws.Range("C82")
+            Sheet1.Range("O" & nextrow) = ws.Range("C83")
+            Sheet1.Range("P" & nextrow) = ws.Range("C84")
+            Sheet1.Range("Q" & nextrow) = ws.Range("C85")
+            Sheet1.Range("R" & nextrow) = ws.Range("C86")
+            Sheet1.Range("S" & nextrow) = ws.Range("C87")
+
+        End If
+    Next ws
+    
+    Application.ScreenUpdating = True
+     
+End Sub
+
+
+
