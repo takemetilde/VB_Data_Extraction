@@ -8,4 +8,4 @@ Download the following:
 Open "Compile Data.xlsm" file.
 When file prompt appears, navigate to the Sunoco Review 040716 folder.
 Select ALL of the data files or the ones needed to be reported.
-Click "Open.
+Click "Open".
